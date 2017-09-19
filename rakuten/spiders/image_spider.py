@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 import scrapy
-import datetime
+from .model.genre import genre
+from .model.auth import auth
 
 
 class ImageSpider(scrapy.Spider):
     name = 'image'
     allowed_domains = ['https://app.rakuten.co.jp/']
-    start_urls = ['https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404/']
 
     def start_requests(self):
-        date = datetime.datetime.now.strftime('%Y%m%d')
-        base_url = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/'
-        url = base_url + date + '?'
+        base_url = 'https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?'
+        applicationId = auth.Auth().get_applicationId()
+        booksGenreId = genre.Genre().get_booksGenreId()
+        url = base_url + "applicationId=" + applicationId + "&booksGenreId=" + booksGenreId
         urls = [
-            'https://app.rakuten.co.jp/services/api/BooksBook/Search/' + date,
+            url,
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
